@@ -22,6 +22,10 @@ public class PaymentPage {
     }
 
     public void placeOrder() {
+        // Reklam iframelerini gizle
+        ((org.openqa.selenium.JavascriptExecutor) driver).executeScript(
+            "var iframes = document.getElementsByTagName('iframe'); for(var i=0; i<iframes.length; i++){iframes[i].style.display='none';}"
+        );
         driver.findElement(placeOrderButton).click();
     }
 
