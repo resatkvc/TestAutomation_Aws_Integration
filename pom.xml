@@ -46,6 +46,12 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.33</version>
         </dependency>
+        <!-- AWS S3 SDK (LocalStack ile S3 işlemleri için) -->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
+            <version>1.12.698</version>
+        </dependency>
     </dependencies>
 
 </project>

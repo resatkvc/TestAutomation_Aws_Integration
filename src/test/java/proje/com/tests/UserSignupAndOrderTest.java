@@ -22,6 +22,11 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 import proje.com.util.Messages;
+import proje.com.util.S3Util;
+import java.text.SimpleDateFormat;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class UserSignupAndOrderTest extends BaseTest {
     private static ExtentReports extentReports;
@@ -52,6 +57,9 @@ public class UserSignupAndOrderTest extends BaseTest {
         driver.get(baseUrl);
         extentTest.info(MarkupHelper.createLabel("[NAVIGATION] Siteye gidildi: " + baseUrl, ExtentColor.BLUE));
 
+        // Zaman damgası oluştur
+        String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+
         HomePage homePage = new HomePage(driver);
         homePage.goToSignupLogin();
         extentTest.info(MarkupHelper.createLabel("[NAVIGATION] Signup/Login butonuna tıklandı.", ExtentColor.BLUE));
@@ -71,6 +79,11 @@ public class UserSignupAndOrderTest extends BaseTest {
         signupPage.clickContinueAfterAccountCreated();
         extentTest.info(MarkupHelper.createLabel("Account Created sonrası Continue tıklandı, kullanıcı login oldu", ExtentColor.BLUE));
 
+        // 1. Kayıt sonrası ekran görüntüsü al ve S3'e yükle
+        String signupScreenshot = takeScreenshot("signup_success_" + timestamp);
+        S3Util.uploadScreenshot("signup_success_" + timestamp + ".png", new java.io.File(signupScreenshot));
+        try { Files.deleteIfExists(Paths.get(signupScreenshot)); } catch (Exception e) { e.printStackTrace(); }
+
         extentTest.info(MarkupHelper.createLabel("[PRODUCT & CART] Ürün ekleme ve sepet işlemleri başlıyor.", ExtentColor.BLUE));
         ProductPage productPage = new ProductPage(driver);
         productPage.addFirstProductToCart();
@@ -87,6 +100,11 @@ public class UserSignupAndOrderTest extends BaseTest {
         cartPage.proceedToCheckout();
         extentTest.info(MarkupHelper.createLabel("Ödeme adımına geçildi: " + baseUrl + "checkout", ExtentColor.GREEN));
 
+        // 2. Sepet sonrası ekran görüntüsü al ve S3'e yükle
+        String cartScreenshot = takeScreenshot("cart_view_" + timestamp);
+        S3Util.uploadScreenshot("cart_view_" + timestamp + ".png", new java.io.File(cartScreenshot));
+        try { Files.deleteIfExists(Paths.get(cartScreenshot)); } catch (Exception e) { e.printStackTrace(); }
+
         extentTest.info(MarkupHelper.createLabel("[PAYMENT] Ödeme işlemleri başlıyor.", ExtentColor.BLUE));
         PaymentPage paymentPage = new PaymentPage(driver);
         paymentPage.placeOrder();
@@ -101,9 +119,18 @@ public class UserSignupAndOrderTest extends BaseTest {
         paymentPage.clickLogout();
         extentTest.info(MarkupHelper.createLabel("Logout işlemi başarıyla yapıldı, test tamamlandı.", ExtentColor.GREEN));
 
+        // 3. Sipariş başarı sonrası ekran görüntüsü al ve S3'e yükle
+        String orderScreenshot = takeScreenshot("order_success_" + timestamp);
+        S3Util.uploadScreenshot("order_success_" + timestamp + ".png", new java.io.File(orderScreenshot));
+        try { Files.deleteIfExists(Paths.get(orderScreenshot)); } catch (Exception e) { e.printStackTrace(); }
+
         long endTime = System.currentTimeMillis();
         long duration = (endTime - startTime) / 1000;
         extentTest.info(MarkupHelper.createLabel("[SUMMARY] Test toplam süresi: " + duration + " saniye | Kullanıcı: " + user.email + " | Kart: ****" + user.cardNumber.substring(user.cardNumber.length()-4), ExtentColor.BLUE));
+
+        // 4. Log dosyasını ikinci bucket'a yükle
+        String logFile = "ExtentReport.html";
+        S3Util.uploadLog("ExtentReport_" + timestamp + ".html", new java.io.File(logFile));
     }
 
     @AfterMethod
