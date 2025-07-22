@@ -36,3 +36,10 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Test Automation ###
+Screenshot/
+ExtentReport.html
+*.png
+*.jpg
+*.jpeg

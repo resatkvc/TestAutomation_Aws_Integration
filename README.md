@@ -1,135 +1,247 @@
-# TestAutomation_Aws_Integration
+# Test Automation AWS Integration Project
 
-## Proje Hakkında
+Bu proje, web otomasyon testleri için geliştirilmiş bir test framework'üdür. Selenium WebDriver, TestNG, ExtentReports ve AWS S3 entegrasyonu içerir.
 
-Bu proje, **Selenium tabanlı uçtan uca (E2E) test otomasyonu** ile AWS servislerinin entegrasyonunu simüle eden bir test altyapısı sunar.  
-Gerçek AWS servisleri yerine, **ücretsiz ve lokal olarak çalışan LocalStack** kullanılmıştır. Böylece ücretli AWS hesabı gerektirmeden, S3 gibi servisler üzerinde testler yapılabilir.
+## 🏗️ Proje Yapısı
 
-Proje, **Page Object Model (POM)** mimarisiyle yazılmıştır ve test verileri ile işlemler tamamen izole, tekrar edilebilir ve otomatikleştirilebilir şekilde tasarlanmıştır.
+```
+TestAutomation_Aws_Integration/
+├── src/
+│   ├── main/java/proje/com/
+│   │   ├── base/
+│   │   │   └── BasePage.java          # Sayfa nesneleri için temel sınıf
+│   │   ├── config/
+│   │   │   └── TestConfig.java        # Test konfigürasyon ayarları
+│   │   ├── model/
+│   │   │   └── User.java              # Kullanıcı veri modeli
+│   │   ├── pages/
+│   │   │   ├── CartPage.java          # Sepet sayfası
+│   │   │   ├── HomePage.java          # Ana sayfa
+│   │   │   ├── PaymentPage.java       # Ödeme sayfası
+│   │   │   ├── ProductPage.java       # Ürün sayfası
+│   │   │   └── SignupPage.java        # Kayıt sayfası
+│   │   └── util/
+│   │       ├── DatabaseUtil.java      # Veritabanı işlemleri
+│   │       ├── Messages.java          # Mesaj sabitleri
+│   │       ├── RandomUserGenerator.java # Rastgele kullanıcı oluşturucu
+│   │       ├── S3Util.java            # AWS S3 işlemleri
+│   │       └── TestUtils.java         # Test yardımcı metodları
+│   └── test/java/proje/com/
+│       ├── base/
+│       │   └── BaseTest.java          # Test temel sınıfı (raporlama dahil)
+│       ├── listeners/
+│       │   └── TestListener.java      # Test olay dinleyicisi
+│       └── tests/
+│           └── UserSignupAndOrderTest.java # E2E test sınıfı
+├── src/test/resources/
+│   └── testng.xml                     # TestNG konfigürasyonu
+├── Screenshot/                        # Ekran görüntüleri
+├── ExtentReport.html                  # Test raporu
+├── pom.xml                           # Maven konfigürasyonu
+├── docker-compose.yml                # Docker konfigürasyonu
+└── schema.sql                        # Veritabanı şeması
+```
 
----
+## 🚀 Özellikler
 
-## İçerik ve Özellikler
+### ✅ Merkezi Test Raporlama
+- **BaseTest** sınıfında tüm raporlama fonksiyonları toplandı
+- ExtentReports entegrasyonu
+- Otomatik screenshot alma ve S3'e yükleme
+- Renkli ve detaylı test logları
 
-- **Selenium WebDriver ile UI Testleri** (Chrome, Firefox desteği)
-- **MySQL** ile kullanıcı ve kart verisi yönetimi (Docker container içinde)
-- **LocalStack** ile AWS S3 işlemlerinin simülasyonu (Docker container içinde)
-- **ExtentReports** ile detaylı HTML test raporları ve hata anında ekran görüntüsü kaydı
-- **Random kullanıcı ve kart üretimi** ile her testte benzersiz veri
-- **Tamamen Docker tabanlı izole test ortamı**
-- **TestNG** ile test yönetimi ve raporlama
+### ✅ Konfigürasyon Yönetimi
+- **TestConfig** sınıfı ile merkezi ayar yönetimi
+- Ortam bazlı konfigürasyon desteği
+- Sistem property'leri ile dinamik ayarlar
 
----
+### ✅ Test Organizasyonu
+- Test grupları (smoke, e2e)
+- Test listener ile olay yönetimi
+- Merkezi utility metodları
 
-## Kurulum ve Çalıştırma Adımları
+### ✅ AWS S3 Entegrasyonu
+- Screenshot'ların otomatik S3'e yüklenmesi
+- Test loglarının S3'te saklanması
+- LocalStack ile local S3 simülasyonu
 
-### 1. Gereksinimler
+## 🛠️ Kurulum
 
-- Docker Desktop
+### Gereksinimler
 - Java 21
-- Maven
-- (Opsiyonel) AWS CLI (LocalStack ile kullanılacak)
+- Maven 3.6+
+- Docker (LocalStack için)
+- MySQL
 
----
+### 1. Projeyi Klonlayın
+```bash
+git clone <repository-url>
+cd TestAutomation_Aws_Integration
+```
 
-### 2. Docker Servislerini Başlat
-
-Tüm altyapı servisleri (MySQL, LocalStack vs.) Docker ile ayağa kaldırılır:
-```sh
+### 2. Docker Servislerini Başlatın
+```bash
 docker-compose up -d
 ```
 
----
-
-### 3. MySQL Tablolarını Oluştur
-
-#### a) SQL Script Dosyasını Container'a Kopyala
-```sh
-docker cp schema.sql test-mysql:/schema.sql
-```
-
-#### b) SQL Scriptini Çalıştır
-```sh
-docker exec -it test-mysql mysql -uroot -proot testdb < /schema.sql
-```
-> Not: `test-mysql` container ismi ve root şifresi docker-compose veya run komutuna göre değişebilir.
-
----
-
-### 4. LocalStack ve AWS CLI Yapılandırması
-
-#### a) AWS CLI Sahte Kimlik Bilgisi Tanımla (LocalStack için)
-```sh
-aws configure
-```
-- Access Key: test
-- Secret Key: test
-- Region: us-east-1
-- Output: json
-
-#### b) LocalStack Üzerinde S3 Bucket Oluştur
-```sh
-aws --endpoint-url=http://localhost:4566 s3 mb s3://test-bucket
-```
-
-> LocalStack, AWS servislerini lokalinizde simüle eder. Gerçek AWS hesabı gerekmez, ücretsizdir.
-
----
-
-### 5. Maven Bağımlılıklarını Yükle
-
-```sh
+### 3. Maven Bağımlılıklarını Yükleyin
+```bash
 mvn clean install
 ```
 
----
+## 🧪 Test Çalıştırma
 
-### 6. Testleri Çalıştır
-
-- **IDE üzerinden** veya terminalden:
-```sh
+### Tüm Testleri Çalıştırma
+```bash
 mvn test
 ```
-- Testler Selenium ile yazıldığı için **Chrome** veya ilgili browser'ın kurulu olması gerekir.
 
----
+### Belirli Test Gruplarını Çalıştırma
+```bash
+# Sadece smoke testleri
+mvn test -Dgroups=smoke
 
-### 7. Rapor ve Sonuçlar
+# Sadece e2e testleri
+mvn test -Dgroups=e2e
+```
 
-- Testler tamamlandığında proje kökünde **ExtentReport.html** dosyası oluşur.
-- Hatalı adımlarda **Screenshot/** klasöründe ekran görüntüleri bulunur.
+### TestNG XML ile Çalıştırma
+```bash
+mvn test -DsuiteXmlFile=src/test/resources/testng.xml
+```
 
----
+### Headless Modda Çalıştırma
+```bash
+mvn test -Dtest.headless=true
+```
 
-## Proje Mimarisi ve Akışı
+### Özel Rapor Yolu ile Çalıştırma
+```bash
+mvn test -Dtest.report.path=CustomReport.html
+```
 
-1. **Kullanıcı Kaydı ve Login:**  
-   Random üretilen kullanıcı ile siteye kayıt olunur ve giriş yapılır.
-2. **Ürün Ekleme ve Sepet:**  
-   Ürün sepete eklenir, sepet kontrol edilir.
-3. **Ödeme ve Sipariş:**  
-   Random kart bilgisiyle ödeme yapılır, sipariş tamamlanır.
-4. **Veritabanı İşlemleri:**  
-   Kullanıcı ve kart bilgileri MySQL'e kaydedilir.
-5. **AWS S3 Simülasyonu:**  
-   LocalStack ile S3 işlemleri (ör. dosya yükleme) test edilir.
-6. **Raporlama:**  
-   Tüm adımlar ve sonuçlar ExtentReport ile raporlanır.
+## 📊 Raporlama
 
----
+### ExtentReports
+- HTML formatında detaylı test raporları
+- Screenshot'lar ile görsel kanıtlar
+- Test süreleri ve istatistikler
+- Renkli log mesajları
 
-## Notlar ve İpuçları
+### S3 Entegrasyonu
+- Screenshot'lar otomatik olarak S3'e yüklenir
+- Test logları S3'te saklanır
+- Zaman damgalı dosya isimlendirme
 
-- Proje **tamamen lokal ve ücretsiz** çalışır, gerçek AWS hesabı gerekmez.
-- LocalStack ile AWS servislerinin neredeyse tamamı simüle edilebilir.
-- Testler tekrar tekrar çalıştırılabilir, her seferinde yeni kullanıcı ve kart oluşturulur.
-- Docker ile izole ortamda çalıştığı için sisteminizde çakışma olmaz.
-- Reklam/iframe kaynaklı Selenium tıklama hataları otomatik olarak engellenir (güncel kodda düzeltildi).
-- Her adımda takılırsanız veya hata alırsanız, detaylı log ve ekran görüntüsü ile kolayca debug yapabilirsiniz.
+## 🔧 Konfigürasyon
 
----
+### TestConfig Sınıfı
+```java
+// WebDriver ayarları
+public static final String BROWSER_TYPE = "chrome";
+public static final boolean HEADLESS_MODE = false;
+public static final int IMPLICIT_WAIT = 10;
 
-## Katkı ve Geliştirme
+// Test URL'leri
+public static final String BASE_URL = "https://automationexercise.com/";
 
-Pull request ve issue açarak katkıda bulunabilirsiniz.  
-Her türlü soru ve destek için iletişime geçebilirsiniz. 
+// AWS S3 ayarları
+public static final String AWS_ENDPOINT = "http://localhost:4566";
+public static final String SCREENSHOT_BUCKET = "test-screenshots";
+```
+
+### Sistem Property'leri
+```bash
+# Test ortamı
+-Dtest.environment=local
+
+# Headless mod
+-Dtest.headless=true
+
+# Rapor yolu
+-Dtest.report.path=CustomReport.html
+```
+
+## 📁 Dosya Yapısı Açıklaması
+
+### BaseTest.java
+- Tüm test sınıfları için temel sınıf
+- WebDriver yönetimi
+- ExtentReports entegrasyonu
+- Screenshot alma ve S3 yükleme
+- Test sonuç raporlama
+
+### TestConfig.java
+- Merkezi konfigürasyon yönetimi
+- URL'ler, timeout'lar, AWS ayarları
+- Ortam bazlı konfigürasyon
+
+### TestListener.java
+- Test olaylarını dinleme
+- Test başlangıç/bitiş logları
+- Test istatistikleri
+
+### TestUtils.java
+- Ortak test yardımcı metodları
+- Element bekleme fonksiyonları
+- JavaScript işlemleri
+- Validasyon metodları
+
+## 🔄 Geliştirme
+
+### Yeni Test Ekleme
+1. `BaseTest`'ten extend edin
+2. Test metodlarını `@Test` annotation'ı ile işaretleyin
+3. Test gruplarını belirtin: `groups = {"smoke", "e2e"}`
+4. BaseTest'teki log metodlarını kullanın
+
+### Yeni Sayfa Ekleme
+1. `BasePage`'den extend edin
+2. Page Object Model pattern'ini kullanın
+3. Locator'ları private static final olarak tanımlayın
+
+### Yeni Utility Ekleme
+1. `TestUtils` sınıfına static metod ekleyin
+2. Gerekirse yeni util sınıfı oluşturun
+3. Konfigürasyon için `TestConfig`'i kullanın
+
+## 🐛 Sorun Giderme
+
+### WebDriver Sorunları
+- ChromeDriver versiyonunu kontrol edin
+- Headless modda çalıştırmayı deneyin
+- Timeout değerlerini artırın
+
+### S3 Bağlantı Sorunları
+- LocalStack'in çalıştığını kontrol edin
+- AWS credentials'ları kontrol edin
+- Bucket'ların oluşturulduğunu kontrol edin
+
+### Database Sorunları
+- MySQL servisinin çalıştığını kontrol edin
+- Connection string'i kontrol edin
+- Schema'nın oluşturulduğunu kontrol edin
+
+## 📈 Performans
+
+### Test Optimizasyonu
+- Parallel test execution kullanın
+- Headless modda çalıştırın
+- Screenshot'ları sadece hata durumunda alın
+- Gereksiz wait'leri kaldırın
+
+### Rapor Optimizasyonu
+- Büyük screenshot'ları sıkıştırın
+- Eski raporları temizleyin
+- S3 lifecycle policy'leri kullanın
+
+## 🤝 Katkıda Bulunma
+
+1. Fork yapın
+2. Feature branch oluşturun
+3. Değişikliklerinizi commit edin
+4. Pull request gönderin
+
+## 📄 Lisans
+
+Bu proje MIT lisansı altında lisanslanmıştır. 

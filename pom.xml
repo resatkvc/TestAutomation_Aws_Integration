@@ -52,6 +52,12 @@
             <artifactId>aws-java-sdk-s3</artifactId>
             <version>1.12.698</version>
         </dependency>
+        <!-- Apache Commons IO (Dosya işlemleri için) -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.11.0</version>
+        </dependency>
     </dependencies>
 
 </project>
