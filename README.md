@@ -205,43 +205,9 @@ public static final String SCREENSHOT_BUCKET = "test-screenshots";
 2. Gerekirse yeni util sınıfı oluşturun
 3. Konfigürasyon için `TestConfig`'i kullanın
 
-## 🐛 Sorun Giderme
-
-### WebDriver Sorunları
-- ChromeDriver versiyonunu kontrol edin
-- Headless modda çalıştırmayı deneyin
-- Timeout değerlerini artırın
-
-### S3 Bağlantı Sorunları
-- LocalStack'in çalıştığını kontrol edin
-- AWS credentials'ları kontrol edin
-- Bucket'ların oluşturulduğunu kontrol edin
-
-### Database Sorunları
-- MySQL servisinin çalıştığını kontrol edin
-- Connection string'i kontrol edin
-- Schema'nın oluşturulduğunu kontrol edin
-
-## 📈 Performans
-
-### Test Optimizasyonu
-- Parallel test execution kullanın
-- Headless modda çalıştırın
-- Screenshot'ları sadece hata durumunda alın
-- Gereksiz wait'leri kaldırın
-
-### Rapor Optimizasyonu
-- Büyük screenshot'ları sıkıştırın
-- Eski raporları temizleyin
-- S3 lifecycle policy'leri kullanın
-
 ## 🤝 Katkıda Bulunma
 
 1. Fork yapın
 2. Feature branch oluşturun
 3. Değişikliklerinizi commit edin
 4. Pull request gönderin
-
-## 📄 Lisans
-
-Bu proje MIT lisansı altında lisanslanmıştır. 
